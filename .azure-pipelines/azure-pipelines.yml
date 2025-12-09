@@ -1,0 +1,62 @@
+trigger:
+- main
+
+variables:
+  system.debug: 'true'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- script: |
+    sudo apt-get update
+    sudo apt-get install -y openjdk-11-jdk
+    java -version
+  displayName: 'Install Java 11'
+
+- task: Maven@4
+  displayName: Maven Clean Package
+  inputs:
+    mavenPomFile: '$(system.defaultWorkingDirectory)/Java_pipeline_with_tests_and_packages/SimpleJavaApp/pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: 'default'
+    jdkArchitectureOption: 'x64'
+    publishJUnitResults: true
+    goals: 'clean package'
+
+- task: PublishTestResults@2
+  displayName: Publish Test Results
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/target/surefire-reports/TEST-*.xml'
+    failTaskOnFailedTests: true
+
+- task: CopyFiles@2
+  displayName: Copy Artifacts
+  inputs:
+    SourceFolder: '$(system.defaultWorkingDirectory)/Java_pipeline_with_tests_and_packages/SimpleJavaApp/target/'
+    Contents: '**/?(*.jar)'
+    TargetFolder: '$(build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish Build Artifacts
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'java-app-jar'
+    publishLocation: 'Container'
+
+- task: Maven@4
+  displayName: 'Publish to ADO techbrain-feed'
+  inputs:
+    mavenPomFile: '$(system.defaultWorkingDirectory)/Java_pipeline_with_tests_and_packages/SimpleJavaApp/pom.xml'
+    goals: 'deploy'
+    options: '-DskipTests'
+    publishJUnitResults: false
+    mavenOptions: '-Xmx1024m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.11'
+    jdkArchitectureOption: 'x64'
+    mavenAuthenticateFeed: true
+    effectivePomSkip: false
+    sonarQubeRunAnalysis: false
