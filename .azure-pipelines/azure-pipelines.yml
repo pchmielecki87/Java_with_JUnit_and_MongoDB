@@ -15,73 +15,38 @@ steps:
     sudo apt-get install -y openjdk-11-jdk
     java -version
   displayName: 'Install Java 11'
-# - task: JavaToolInstaller@0
-#   displayName: 'Install Java $(java.version)'
-#   inputs:
-#     versionSpec: '$(java.version)'
-#     jdkArchitectureOption: 'x64'
-#     jdkSourceOption: 'PreInstalled'
 
-- task: Maven@3
-  displayName: 'Build, Package, and Run Unit Tests'
+- task: Maven@4
+  displayName: Maven Clean Package
   inputs:
-    # Use the POM file defined in variables
-    mavenPomFile: '$(maven.pom.file)'
-    # The 'package' goal compiles, runs tests (using Surefire), and creates the JAR
-    goals: 'package'
-    
-    # Configuration for test results publishing
+    mavenPomFile: '$(system.defaultWorkingDirectory)/pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: 'default'
+    jdkArchitectureOption: 'x64'
     publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml' # Path pattern for Surefire reports
-    testRunTitle: 'JUnit 5 Unit Tests'
-    
-    # Java environment configuration
-    javaHomeOption: 'JDK'
-    jdkVersionOption: '$(java.version)'
-    mavenVersionOption: 'Default'
-    
-    # Ensure compiler options match the required Java version
-    options: '-Dmaven.compiler.source=$(java.version) -Dmaven.compiler.target=$(java.version)'
+    goals: 'clean package'
+
+- task: PublishTestResults@2
+  displayName: Publish Test Results
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/target/surefire-reports/TEST-*.xml'
+    failTaskOnFailedTests: true
+
+- task: CopyFiles@2
+  displayName: Copy Artifacts
+  inputs:
+    SourceFolder: '$(system.defaultWorkingDirectory)/target/'
+    Contents: '**/?(*.jar)'
+    TargetFolder: '$(build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish Build Artifact (JAR)'
+  displayName: Publish Build Artifacts
   inputs:
-    # Path to the directory containing the compiled JAR
-    PathtoPublish: '$(System.DefaultWorkingDirectory)/target'
-    ArtifactName: 'SimpleCalculator'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'java-app-jar'
     publishLocation: 'Container'
-
-# - task: Maven@4
-#   displayName: Maven Clean Package
-#   inputs:
-#     mavenPomFile: '$(system.defaultWorkingDirectory)/Java_pipeline_with_tests_and_packages/SimpleJavaApp/pom.xml'
-#     mavenOptions: '-Xmx3072m'
-#     javaHomeOption: 'JDKVersion'
-#     jdkVersionOption: 'default'
-#     jdkArchitectureOption: 'x64'
-#     publishJUnitResults: true
-#     goals: 'clean package'
-
-# - task: PublishTestResults@2
-#   displayName: Publish Test Results
-#   inputs:
-#     testResultsFormat: 'JUnit'
-#     testResultsFiles: '**/target/surefire-reports/TEST-*.xml'
-#     failTaskOnFailedTests: true
-
-# - task: CopyFiles@2
-#   displayName: Copy Artifacts
-#   inputs:
-#     SourceFolder: '$(system.defaultWorkingDirectory)/Java_pipeline_with_tests_and_packages/SimpleJavaApp/target/'
-#     Contents: '**/?(*.jar)'
-#     TargetFolder: '$(build.ArtifactStagingDirectory)'
-
-# - task: PublishBuildArtifacts@1
-#   displayName: Publish Build Artifacts
-#   inputs:
-#     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-#     ArtifactName: 'java-app-jar'
-#     publishLocation: 'Container'
 
 - task: Maven@4
   displayName: 'Publish to ADO techbrain-feed'
