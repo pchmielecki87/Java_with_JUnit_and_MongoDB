@@ -1,6 +1,6 @@
 # Java app ADO pipeline intro
 
-This is simple Java app wioth tests.
+This is Java SimpleCalculator app with tests.
 
 ## Connect to ADO feed
 
