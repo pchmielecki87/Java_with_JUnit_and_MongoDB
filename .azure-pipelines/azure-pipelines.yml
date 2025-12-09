@@ -51,7 +51,7 @@ steps:
 - task: Maven@4
   displayName: 'Publish to ADO techbrain-feed'
   inputs:
-    mavenPomFile: '$(system.defaultWorkingDirectory)pom.xml'
+    mavenPomFile: '$(system.defaultWorkingDirectory)/pom.xml'
     goals: 'deploy'
     options: '-DskipTests'
     publishJUnitResults: false
