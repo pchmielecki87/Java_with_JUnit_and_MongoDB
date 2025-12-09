@@ -10,17 +10,17 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-# - script: |
-#     sudo apt-get update
-#     sudo apt-get install -y openjdk-11-jdk
-#     java -version
-#   displayName: 'Install Java 11'
-- task: JavaToolInstaller@0
-  displayName: 'Install Java $(java.version)'
-  inputs:
-    versionSpec: '$(java.version)'
-    jdkArchitectureOption: 'x64'
-    jdkSourceOption: 'PreInstalled'
+- script: |
+    sudo apt-get update
+    sudo apt-get install -y openjdk-11-jdk
+    java -version
+  displayName: 'Install Java 11'
+# - task: JavaToolInstaller@0
+#   displayName: 'Install Java $(java.version)'
+#   inputs:
+#     versionSpec: '$(java.version)'
+#     jdkArchitectureOption: 'x64'
+#     jdkSourceOption: 'PreInstalled'
 
 - task: Maven@3
   displayName: 'Build, Package, and Run Unit Tests'
