@@ -45,7 +45,7 @@ steps:
   displayName: Publish Build Artifacts
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'java-app-jar'
+    ArtifactName: 'java-calc-jar'
     publishLocation: 'Container'
 
 - task: Maven@4
