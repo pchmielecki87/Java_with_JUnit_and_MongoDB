@@ -17,12 +17,12 @@ steps:
   displayName: 'Install Java 11'
   
 - script: |
-  echo "Pipeline Variables:"
-  echo "Java Version: $(java.version)"
-  echo "Maven POM File: $(maven.pom.file)"
-  echo "System Debug: $(system.debug)"
-  echo "Secret from KV: $(secret1)"
-  echo "Secret from Local: $(test1)"
+    echo "Pipeline Variables:"
+    echo "Java Version: $(java.version)"
+    echo "Maven POM File: $(maven.pom.file)"
+    echo "System Debug: $(system.debug)"
+    echo "Secret from KV: $(secret1)"
+    echo "Secret from Local: $(test1)"
   displayName: 'Print Pipeline Variables and Secrets'
 
 - task: Maven@4
