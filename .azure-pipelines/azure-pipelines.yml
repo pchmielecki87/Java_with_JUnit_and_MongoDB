@@ -2,9 +2,11 @@ trigger:
 - main
 
 variables:
-  java.version: '1.11'
-  maven.pom.file: 'pom.xml'
-  system.debug: 'true'
+- group: "KV variable group"
+- group: "Local secrets group"
+- java.version: '1.11'
+- maven.pom.file: 'pom.xml'
+- system.debug: 'true'
 
 pool:
   vmImage: 'ubuntu-latest'
